@@ -1,5 +1,5 @@
-use inquire::{Select, Text, Confirm};
 use crate::detection::PackageManager;
+use inquire::{Confirm, Select, Text};
 
 pub async fn select_package_interactive() -> Result<Vec<String>, Box<dyn std::error::Error>> {
     let packages = select_packages_interactive().await?;
@@ -8,13 +8,16 @@ pub async fn select_package_interactive() -> Result<Vec<String>, Box<dyn std::er
 
 pub async fn select_packages_interactive() -> Result<Vec<String>, Box<dyn std::error::Error>> {
     let dependencies = get_package_dependencies()?;
-    
+
     if dependencies.is_empty() {
         return Ok(vec![]); // Return empty list if no dependencies found
     }
-    
+
     // Show a selectable list of dependencies
-    match Select::new("Select packages to uninstall:", dependencies.clone()).prompt() {
+    match Select::new("Select packages to uninstall:", dependencies.clone())
+        .without_help_message()
+        .prompt()
+    {
         Ok(selected) => Ok(vec![selected]),
         Err(inquire::error::InquireError::OperationCanceled) => Ok(vec![]), // Gracefully handle cancellation
         Err(e) => Err(e.into()),
@@ -28,7 +31,7 @@ fn get_package_dependencies() -> Result<Vec<String>, Box<dyn std::error::Error>>
 
     let content = std::fs::read_to_string("package.json")?;
     let package_json: serde_json::Value = serde_json::from_str(&content)?;
-    
+
     let mut dependencies = Vec::new();
 
     // Get dependencies
@@ -37,12 +40,18 @@ fn get_package_dependencies() -> Result<Vec<String>, Box<dyn std::error::Error>>
     }
 
     // Get devDependencies
-    if let Some(dev_deps) = package_json.get("devDependencies").and_then(|d| d.as_object()) {
+    if let Some(dev_deps) = package_json
+        .get("devDependencies")
+        .and_then(|d| d.as_object())
+    {
         dependencies.extend(dev_deps.keys().cloned());
     }
 
     // Get peerDependencies
-    if let Some(peer_deps) = package_json.get("peerDependencies").and_then(|d| d.as_object()) {
+    if let Some(peer_deps) = package_json
+        .get("peerDependencies")
+        .and_then(|d| d.as_object())
+    {
         dependencies.extend(peer_deps.keys().cloned());
     }
 
@@ -53,13 +62,15 @@ fn get_package_dependencies() -> Result<Vec<String>, Box<dyn std::error::Error>>
     Ok(dependencies)
 }
 
-pub async fn select_script_interactive(_pm: &PackageManager) -> Result<String, Box<dyn std::error::Error>> {
+pub async fn select_script_interactive(
+    _pm: &PackageManager,
+) -> Result<String, Box<dyn std::error::Error>> {
     select_package_json_script_interactive().await
 }
 
 async fn select_package_json_script_interactive() -> Result<String, Box<dyn std::error::Error>> {
     let scripts = get_package_json_scripts_with_commands()?;
-    
+
     if scripts.is_empty() {
         std::process::exit(0);
     }
@@ -86,10 +97,11 @@ async fn select_package_json_script_interactive() -> Result<String, Box<dyn std:
     }
 }
 
-pub fn get_package_json_scripts_with_commands() -> Result<std::collections::HashMap<String, String>, Box<dyn std::error::Error>> {
+pub fn get_package_json_scripts_with_commands(
+) -> Result<std::collections::HashMap<String, String>, Box<dyn std::error::Error>> {
     let content = std::fs::read_to_string("package.json")?;
     let package_json: serde_json::Value = serde_json::from_str(&content)?;
-    
+
     if let Some(scripts) = package_json.get("scripts").and_then(|s| s.as_object()) {
         let mut result = std::collections::HashMap::new();
         for (name, command) in scripts {
@@ -140,14 +152,23 @@ pub async fn add_script_interactive() -> Result<(), Box<dyn std::error::Error>> 
     let mut package_json = read_package_json()?;
 
     // Check if script already exists
-    if let Some(scripts) = package_json.get_mut("scripts").and_then(|s| s.as_object_mut()) {
+    if let Some(scripts) = package_json
+        .get_mut("scripts")
+        .and_then(|s| s.as_object_mut())
+    {
         if scripts.contains_key(&script_name) {
-            match Confirm::new(&format!("Script '{}' already exists. Overwrite?", script_name))
-                .with_default(false)
-                .prompt()
+            match Confirm::new(&format!(
+                "Script '{}' already exists. Overwrite?",
+                script_name
+            ))
+            .with_default(false)
+            .prompt()
             {
                 Ok(true) => {
-                    scripts.insert(script_name.clone(), serde_json::Value::String(script_command.clone()));
+                    scripts.insert(
+                        script_name.clone(),
+                        serde_json::Value::String(script_command.clone()),
+                    );
                 }
                 Ok(false) => {
                     println!("Cancelled. Script not modified.");
@@ -157,7 +178,10 @@ pub async fn add_script_interactive() -> Result<(), Box<dyn std::error::Error>> 
                 Err(e) => return Err(e.into()),
             }
         } else {
-            scripts.insert(script_name.clone(), serde_json::Value::String(script_command.clone()));
+            scripts.insert(
+                script_name.clone(),
+                serde_json::Value::String(script_command.clone()),
+            );
         }
     } else {
         // Create scripts object if it doesn't exist

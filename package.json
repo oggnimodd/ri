@@ -6,6 +6,7 @@
   "main": "index.js",
   "name": "my-project",
   "scripts": {
+    "build": "cargo build --release",
     "install": "cargo install --path ."
   },
   "version": "1.0.0"

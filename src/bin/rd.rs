@@ -23,7 +23,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .ok_or("No package manager detected in current directory")?;
 
     if !ri::is_package_manager_available(&package_manager) {
-        eprintln!("Package manager '{}' is not available", package_manager.command());
+        eprintln!(
+            "Package manager '{}' is not available",
+            package_manager.command()
+        );
         std::process::exit(1);
     }
 

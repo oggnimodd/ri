@@ -1,5 +1,8 @@
 use clap::Parser;
-use ri::{detect_package_manager, run_script, add_script_interactive, get_package_json_scripts_with_commands};
+use ri::{
+    add_script_interactive, detect_package_manager, get_package_json_scripts_with_commands,
+    run_script,
+};
 
 #[derive(Parser)]
 #[command(name = "rr")]
@@ -35,7 +38,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         if !std::path::Path::new("package.json").exists() {
             std::process::exit(0);
         }
-        
+
         match get_package_json_scripts_with_commands() {
             Ok(scripts) => {
                 if scripts.is_empty() {
@@ -65,7 +68,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .ok_or("No package manager detected in current directory")?;
 
     if !ri::is_package_manager_available(&package_manager) {
-        eprintln!("Package manager '{}' is not available", package_manager.command());
+        eprintln!(
+            "Package manager '{}' is not available",
+            package_manager.command()
+        );
         std::process::exit(1);
     }
 

@@ -1,6 +1,6 @@
-use std::process::Command;
 use crate::detection::PackageManager;
 use crate::interactive::{select_package_interactive, select_script_interactive};
+use std::process::Command;
 
 pub async fn install_packages(
     pm: &PackageManager,
@@ -141,7 +141,7 @@ pub async fn uninstall_packages(
     }
 
     let mut cmd = Command::new(pm.command());
-    
+
     match pm {
         PackageManager::Npm => {
             cmd.arg("uninstall");
@@ -173,7 +173,10 @@ pub async fn uninstall_packages(
     Ok(())
 }
 
-fn script_exists(script_name: &str, _pm: &PackageManager) -> Result<bool, Box<dyn std::error::Error>> {
+fn script_exists(
+    script_name: &str,
+    _pm: &PackageManager,
+) -> Result<bool, Box<dyn std::error::Error>> {
     let scripts = get_package_json_scripts()?;
     Ok(scripts.contains(&script_name.to_string()))
 }
@@ -181,7 +184,7 @@ fn script_exists(script_name: &str, _pm: &PackageManager) -> Result<bool, Box<dy
 fn get_package_json_scripts() -> Result<Vec<String>, Box<dyn std::error::Error>> {
     let content = std::fs::read_to_string("package.json")?;
     let package_json: serde_json::Value = serde_json::from_str(&content)?;
-    
+
     if let Some(scripts) = package_json.get("scripts").and_then(|s| s.as_object()) {
         Ok(scripts.keys().cloned().collect())
     } else {
