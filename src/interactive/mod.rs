@@ -81,7 +81,10 @@ async fn select_package_json_script_interactive() -> Result<String, Box<dyn std:
         .map(|(name, command)| format!("{} -> {}", name, command))
         .collect();
 
-    match Select::new("Select script:", display_options).prompt() {
+    match Select::new("Select script:", display_options)
+        .without_help_message()
+        .prompt()
+    {
         Ok(selected) => {
             // Find the corresponding script name from the selected display text
             for (name, command) in scripts.iter() {
