@@ -22,7 +22,7 @@ cargo test
 cargo install --path .
 
 # Install from git (production)
-cargo install --git https://github.com/your-username/ri.git
+cargo install --locked --git https://github.com/oggnimodd/ri.git
 ```
 
 ## Architecture

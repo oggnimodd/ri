@@ -17,10 +17,11 @@ A Rust implementation of the popular `@antfu/ni` package manager CLI. **ri** pro
 
 ```bash
 # Install globally using cargo (adds to ~/.cargo/bin/)
-cargo install --git https://github.com/your-username/ri.git
+cargo install --locked --git https://github.com/oggnimodd/ri.git
 
-# Or install from local directory
-cargo install --path .
+# Or from a local clone. install.sh wraps this and re-asserts the binary
+# permissions, which cargo install has been known to drop.
+./install.sh
 ```
 
 ### Method 2: Build from Source

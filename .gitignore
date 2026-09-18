@@ -1,2 +1,9 @@
+# Rust build output
 /target
+
+# npm/yarn/pnpm/bun installs, for the dev scripts in package.json.
+# Nested trees are ignored too, hence no anchor.
 node_modules
+
+# `npm pack` output. Cargo's own artefacts live in /target.
+*.tgz

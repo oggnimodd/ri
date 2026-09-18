@@ -2,12 +2,12 @@
   "author": "",
   "description": "",
   "keywords": [],
-  "license": "ISC",
+  "license": "MIT",
   "main": "index.js",
-  "name": "my-project",
+  "name": "ri",
   "scripts": {
     "build": "cargo build --release",
-    "install": "cargo install --path ."
+    "install": "./install.sh"
   },
   "version": "1.0.0"
 }
